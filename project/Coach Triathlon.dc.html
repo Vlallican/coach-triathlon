@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #0e0f12; }
+    @keyframes pulseDot { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+    a { color: #00e6a8; }
+    a:hover { color: #4dffce; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; width: 100%; box-sizing: border-box; background: #100f13; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 48px 20px; font-family: 'Sora', sans-serif;">
+
+  <div style="text-align: center; max-width: 420px;">
+    <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 15px; color: #f5f6f7; letter-spacing: 0.2px;">Coach IA — Triathlon</div>
+    <div style="font-size: 12.5px; color: rgba(245,246,247,0.4); margin-top: 4px;">Prototype cliquable — Accueil, Planning, Historique, Chat. Accent réglable via Tweaks.</div>
+  </div>
+
+  <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" width="{{ 402 }}" height="{{ 874 }}" hint-size="402px,874px">
+    <div style="height: 100%; width: 100%; position: relative; display: flex; flex-direction: column; background: #0a0b0d; color: #f5f6f7; font-family: 'Sora', sans-serif; overflow: hidden;">
+
+      <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;">
+
+        <!-- HOME -->
+        <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+          <div style="flex: 1; overflow-y: auto; padding: 68px 20px 110px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px;">
+
+            <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+              <div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 26px; color: #f5f6f7;">Bonjour, Léa</div>
+                <div style="font-size: 13.5px; color: rgba(245,246,247,0.45); margin-top: 4px;">Mercredi 15 juillet</div>
+              </div>
+              <div style="width: 42px; height: 42px; border-radius: 21px; background: {{ accentColor }}; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14px; color: #06110d; flex-shrink: 0;">LM</div>
+            </div>
+
+            <!-- Featured session card -->
+            <div style="background: #15171b; border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 34px; height: 34px; border-radius: 17px; background: {{ todaySession.sportColor }}; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; color: #06110d;">{{ todaySession.sportInitial }}</div>
+                <div>
+                  <div style="font-size: 11.5px; letter-spacing: 0.6px; text-transform: uppercase; color: rgba(245,246,247,0.4);">Séance du jour · {{ todaySession.sportLabel }}</div>
+                  <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 17px; color: #f5f6f7; margin-top: 2px;">{{ todaySession.title }}</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <div style="flex: 1; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 10px 12px;">
+                  <div style="font-size: 10.5px; color: rgba(245,246,247,0.4);">Durée</div>
+                  <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; margin-top: 2px;">{{ todaySession.durationLabel }}</div>
+                </div>
+                <div style="flex: 1; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 10px 12px;">
+                  <div style="font-size: 10.5px; color: rgba(245,246,247,0.4);">Distance</div>
+                  <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; margin-top: 2px;">{{ todaySession.distanceLabel }}</div>
+                </div>
+                <div style="flex: 1; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 10px 12px;">
+                  <div style="font-size: 10.5px; color: rgba(245,246,247,0.4);">Intensité</div>
+                  <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; margin-top: 2px;">{{ todaySession.intensityLabel }}</div>
+                </div>
+              </div>
+              <div onClick="{{ todaySession.open }}" style="background: {{ accentColor }}; color: #06110d; text-align: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 15px; padding: 13px; border-radius: 14px; cursor: pointer;">Démarrer la séance</div>
+            </div>
+
+            <!-- Coach IA insight -->
+            <div style="background: #15171b; border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 16px; display: flex; gap: 12px;">
+              <div style="width: 30px; height: 30px; border-radius: 15px; background: rgba(0,230,168,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <div style="width: 8px; height: 8px; border-radius: 4px; background: {{ accentColor }}; animation: pulseDot 1.8s ease-in-out infinite;"></div>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; color: rgba(245,246,247,0.4); margin-bottom: 4px;">Coach IA</div>
+                <div style="font-size: 13.5px; line-height: 1.5; color: rgba(245,246,247,0.85);">J'ai réduit ton fractionné de vendredi : ton TSS a été plus élevé que prévu après la sortie longue. Ta charge reste dans la zone optimale pour l'Ironman 70.3.</div>
+                <div onClick="{{ goToChat }}" style="font-size: 12.5px; color: {{ accentColor }}; margin-top: 8px; cursor: pointer; font-weight: 600;">Voir la conversation →</div>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; color: rgba(245,246,247,0.6); margin-bottom: 10px;">Cette semaine</div>
+              <div style="background: #15171b; border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+                <sc-for list="{{ weekVolume }}" as="v" hint-placeholder-count="3">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 54px; font-size: 12px; color: rgba(245,246,247,0.55);">{{ v.label }}</div>
+                    <div style="flex: 1; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.06); overflow: hidden;">
+                      <div style="height: 100%; border-radius: 4px; background: {{ v.color }}; width: {{ v.pctLabel }};"></div>
+                    </div>
+                    <div style="width: 46px; text-align: right; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12.5px;">{{ v.hoursLabel }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+              <div style="flex: 1; background: #15171b; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 14px;">
+                <div style="font-size: 11px; color: rgba(245,246,247,0.4);">Charge 7 jours</div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; margin-top: 4px;">453 <span style="font-size: 12px; font-weight: 500; color: rgba(245,246,247,0.4);">TSS</span></div>
+              </div>
+              <div style="flex: 1; background: #15171b; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 14px;">
+                <div style="font-size: 11px; color: rgba(245,246,247,0.4);">Prochaine course</div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; margin-top: 4px;">J-42</div>
+              </div>
+            </div>
+
+          </div>
+        </sc-if>
+
+        <!-- PLANNING -->
+        <sc-if value="{{ isPlanning }}" hint-placeholder-val="{{ false }}">
+          <div style="flex: 1; overflow-y: auto; padding: 68px 20px 110px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px;">
+            <div>
+              <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 24px;">Planning</div>
+              <div style="font-size: 13px; color: rgba(245,246,247,0.45); margin-top: 4px;">Semaine du 13 au 19 juillet</div>
+            </div>
+
+            <div style="display: flex; gap: 7px;">
+              <sc-for list="{{ planningDays }}" as="d" hint-placeholder-count="7">
+                <div onClick="{{ d.select }}" style="flex: 1; border-radius: 13px; padding: 9px 0; text-align: center; background: {{ d.bg }}; border: 1px solid {{ d.border }}; cursor: pointer;">
+                  <div style="font-size: 10px; color: {{ d.textColor }}; letter-spacing: 0.4px;">{{ d.dayLabel }}</div>
+                  <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14px; color: {{ d.numColor }}; margin-top: 3px;">{{ d.dayNum }}</div>
+                  <div style="width: 5px; height: 5px; border-radius: 3px; background: {{ d.dotColor }}; margin: 5px auto 0;"></div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <sc-for list="{{ sessions }}" as="s" hint-placeholder-count="7">
+                <div onClick="{{ s.open }}" style="background: #15171b; border: 1px solid {{ s.cardBorder }}; border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                  <div style="width: 40px; flex-shrink: 0;">
+                    <div style="font-size: 10px; color: rgba(245,246,247,0.4); letter-spacing: 0.4px;">{{ s.dayLabel }}</div>
+                    <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px;">{{ s.dayNum }}</div>
+                  </div>
+                  <div style="width: 1px; align-self: stretch; background: rgba(255,255,255,0.06);"></div>
+                  <sc-if value="{{ s.isRest }}" hint-placeholder-val="{{ false }}">
+                    <div style="flex: 1; color: rgba(245,246,247,0.35); font-size: 13.5px; font-style: italic;">Repos</div>
+                  </sc-if>
+                  <sc-if value="{{ s.isNotRest }}" hint-placeholder-val="{{ true }}">
+                    <div style="width: 30px; height: 30px; border-radius: 15px; background: {{ s.sportColor }}; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 12px; color: #06110d; flex-shrink: 0;">{{ s.sportInitial }}</div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ s.title }}</div>
+                      <div style="font-size: 12px; color: rgba(245,246,247,0.45); margin-top: 2px;">{{ s.durationLabel }} · {{ s.distanceLabel }}</div>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- HISTORIQUE -->
+        <sc-if value="{{ isHistorique }}" hint-placeholder-val="{{ false }}">
+          <div style="flex: 1; overflow-y: auto; padding: 68px 20px 110px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px;">
+            <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 24px;">Historique</div>
+
+            <div style="display: flex; background: #15171b; border-radius: 12px; padding: 4px; gap: 4px;">
+              <sc-for list="{{ historyRanges }}" as="r" hint-placeholder-count="3">
+                <div onClick="{{ r.select }}" style="flex: 1; text-align: center; padding: 8px 0; border-radius: 9px; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ r.bg }}; color: {{ r.color }};">{{ r.label }}</div>
+              </sc-for>
+            </div>
+
+            <div>
+              <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px;">
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; color: rgba(245,246,247,0.6);">Volume par sport</div>
+                <div style="display: flex; gap: 10px; font-size: 10.5px; color: rgba(245,246,247,0.45);">
+                  <span><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:#3d8bff;margin-right:4px;"></span>Nat.</span>
+                  <span><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:#ffb020;margin-right:4px;"></span>Vélo</span>
+                  <span><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:#00e6a8;margin-right:4px;"></span>Course</span>
+                </div>
+              </div>
+              <div style="background: #15171b; border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 16px 12px 10px; display: flex; align-items: flex-end; gap: 10px; height: 150px; box-sizing: border-box;">
+                <sc-for list="{{ historyWeeks }}" as="w" hint-placeholder-count="8">
+                  <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px;">
+                    <div style="display: flex; flex-direction: column-reverse; width: 12px; border-radius: 3px; overflow: hidden;">
+                      <div style="height: {{ w.swimPx }}; background: #3d8bff;"></div>
+                      <div style="height: {{ w.bikePx }}; background: #ffb020;"></div>
+                      <div style="height: {{ w.runPx }}; background: #00e6a8;"></div>
+                    </div>
+                    <div style="font-size: 9.5px; color: rgba(245,246,247,0.35);">{{ w.label }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; color: rgba(245,246,247,0.6); margin-bottom: 10px;">Charge d'entraînement</div>
+              <div style="background: #15171b; border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 16px 12px 10px; position: relative; height: 130px; box-sizing: border-box;">
+                <div style="position: absolute; left: 12px; right: 12px; bottom: {{ bandBottom }}; height: {{ bandHeight }}; background: rgba(0,230,168,0.08); border-top: 1px dashed rgba(0,230,168,0.35); border-bottom: 1px dashed rgba(0,230,168,0.35);"></div>
+                <div style="display: flex; align-items: flex-end; gap: 10px; height: 100%; position: relative;">
+                  <sc-for list="{{ chargeWeeks }}" as="c" hint-placeholder-count="8">
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px;">
+                      <div style="width: 12px; border-radius: 3px; height: {{ c.px }}; background: {{ c.color }};"></div>
+                      <div style="font-size: 9.5px; color: rgba(245,246,247,0.35);">{{ c.label }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+              <div style="flex: 1; background: #15171b; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 14px;">
+                <div style="font-size: 11px; color: rgba(245,246,247,0.4);">Volume semaine</div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 19px; margin-top: 4px;">8h40</div>
+              </div>
+              <div style="flex: 1; background: #15171b; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 14px;">
+                <div style="font-size: 11px; color: rgba(245,246,247,0.4);">Séances</div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 19px; margin-top: 4px;">6 / 7</div>
+              </div>
+              <div style="flex: 1; background: #15171b; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 14px;">
+                <div style="font-size: 11px; color: rgba(245,246,247,0.4);">Vs sem. dernière</div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 19px; margin-top: 4px; color: #ff6b45;">−26%</div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- CHAT -->
+        <sc-if value="{{ isChat }}" hint-placeholder-val="{{ false }}">
+          <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding-top: 68px; box-sizing: border-box;">
+            <div style="padding: 0 20px 14px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+              <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 22px;">Coach IA</div>
+              <div style="font-size: 12.5px; color: rgba(245,246,247,0.45); margin-top: 2px;">Toujours disponible</div>
+            </div>
+            <div style="flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px;">
+              <sc-for list="{{ chatMessages }}" as="m" hint-placeholder-count="4">
+                <div style="display: flex; justify-content: {{ m.justify }};">
+                  <div style="max-width: 78%; background: {{ m.bg }}; color: {{ m.textColor }}; padding: 11px 14px; border-radius: 16px; font-size: 13.5px; line-height: 1.45;">{{ m.text }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="padding: 6px 16px 4px; display: flex; gap: 8px; flex-wrap: wrap;">
+              <sc-for list="{{ quickReplies }}" as="q" hint-placeholder-count="3">
+                <div onClick="{{ q.send }}" style="border: 1px solid rgba(255,255,255,0.14); color: rgba(245,246,247,0.7); font-size: 12px; padding: 7px 12px; border-radius: 999px; cursor: pointer;">{{ q.text }}</div>
+              </sc-for>
+            </div>
+            <div style="padding: 10px 16px 22px; display: flex; gap: 8px; align-items: center;">
+              <input value="{{ chatInput }}" onChange="{{ setChatInput }}" onKeyDown="{{ handleChatKey }}" placeholder="Écrire un message…" style="flex: 1; background: #15171b; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 11px 16px; color: #f5f6f7; font-size: 13.5px; font-family: 'Sora', sans-serif; outline: none; box-sizing: border-box;" />
+              <div onClick="{{ sendChat }}" style="width: 40px; height: 40px; border-radius: 20px; background: {{ accentColor }}; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
+                <svg width="16" height="16" viewBox="0 0 16 16"><path d="M1 8L15 1L9.5 15L7 9L1 8Z" fill="#06110d"/></svg>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+      </div>
+
+      <!-- TAB BAR -->
+      <div style="display: flex; align-items: center; justify-content: space-around; padding: 10px 8px 26px; background: rgba(20,21,25,0.92); border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0;">
+        <div onClick="{{ setTabHome }}" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 10px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 11L12 4L20 11V20H14V14H10V20H4V11Z" stroke="{{ homeIconColor }}" stroke-width="2" stroke-linejoin="round"/></svg>
+          <div style="font-size: 10px; color: {{ homeIconColor }};">Accueil</div>
+        </div>
+        <div onClick="{{ setTabPlanning }}" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 10px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="{{ planningIconColor }}" stroke-width="2"/><path d="M4 10H20M8 3V6M16 3V6" stroke="{{ planningIconColor }}" stroke-width="2" stroke-linecap="round"/></svg>
+          <div style="font-size: 10px; color: {{ planningIconColor }};">Planning</div>
+        </div>
+        <div onClick="{{ setTabHistorique }}" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 10px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 20V13M12 20V7M19 20V16" stroke="{{ historiqueIconColor }}" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <div style="font-size: 10px; color: {{ historiqueIconColor }};">Historique</div>
+        </div>
+        <div onClick="{{ setTabChat }}" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 10px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 5H20V16H9L5 19.5V16H4V5Z" stroke="{{ chatIconColor }}" stroke-width="2" stroke-linejoin="round"/></svg>
+          <div style="font-size: 10px; color: {{ chatIconColor }};">Coach</div>
+        </div>
+      </div>
+
+      <!-- SESSION DETAIL OVERLAY -->
+      <sc-if value="{{ hasSelectedSession }}" hint-placeholder-val="{{ false }}">
+        <div style="position: absolute; inset: 0; z-index: 30; background: #0a0b0d; display: flex; flex-direction: column; overflow: hidden;">
+          <div style="flex: 1; overflow-y: auto; padding: 68px 20px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 34px; height: 34px; border-radius: 17px; background: {{ selectedSession.sportColor }}; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; color: #06110d;">{{ selectedSession.sportInitial }}</div>
+                <div>
+                  <div style="font-size: 11px; color: rgba(245,246,247,0.4);">{{ selectedSession.dayFull }} · {{ selectedSession.sportLabel }}</div>
+                  <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px;">{{ selectedSession.title }}</div>
+                </div>
+              </div>
+              <div onClick="{{ closeSession }}" style="width: 32px; height: 32px; border-radius: 16px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                <svg width="13" height="13" viewBox="0 0 13 13"><path d="M1 1L12 12M12 1L1 12" stroke="rgba(245,246,247,0.7)" stroke-width="1.6" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+              <div style="background: #15171b; border-radius: 14px; padding: 12px;">
+                <div style="font-size: 10.5px; color: rgba(245,246,247,0.4);">Distance</div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; margin-top: 3px;">{{ selectedSession.distanceLabel }}</div>
+              </div>
+              <div style="background: #15171b; border-radius: 14px; padding: 12px;">
+                <div style="font-size: 10.5px; color: rgba(245,246,247,0.4);">Durée</div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; margin-top: 3px;">{{ selectedSession.durationLabel }}</div>
+              </div>
+              <div style="background: #15171b; border-radius: 14px; padding: 12px;">
+                <div style="font-size: 10.5px; color: rgba(245,246,247,0.4);">Allure</div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; margin-top: 3px;">{{ selectedSession.paceLabel }}</div>
+              </div>
+              <div style="background: #15171b; border-radius: 14px; padding: 12px;">
+                <div style="font-size: 10.5px; color: rgba(245,246,247,0.4);">FC moy / max</div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; margin-top: 3px;">{{ selectedSession.hrLabel }}</div>
+              </div>
+              <sc-if value="{{ selectedSession.hasPower }}" hint-placeholder-val="{{ false }}">
+                <div style="background: #15171b; border-radius: 14px; padding: 12px;">
+                  <div style="font-size: 10.5px; color: rgba(245,246,247,0.4);">Puissance</div>
+                  <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; margin-top: 3px;">{{ selectedSession.powerLabel }}</div>
+                </div>
+              </sc-if>
+              <div style="background: #15171b; border-radius: 14px; padding: 12px;">
+                <div style="font-size: 10.5px; color: rgba(245,246,247,0.4);">TSS</div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; margin-top: 3px;">{{ selectedSession.tss }}</div>
+              </div>
+              <div style="background: #15171b; border-radius: 14px; padding: 12px;">
+                <div style="font-size: 10.5px; color: rgba(245,246,247,0.4);">RPE ressenti</div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; margin-top: 3px;">{{ selectedSession.rpeLabel }}</div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; color: rgba(245,246,247,0.6);">Zones cardiaques</div>
+              </div>
+              <div style="display: flex; height: 14px; border-radius: 7px; overflow: hidden;">
+                <sc-for list="{{ selectedSession.zones }}" as="z" hint-placeholder-count="5">
+                  <div style="height: 100%; width: {{ z.widthLabel }}; background: {{ z.color }};"></div>
+                </sc-for>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 9.5px; color: rgba(245,246,247,0.35);">
+                <span>Z1</span><span>Z2</span><span>Z3</span><span>Z4</span><span>Z5</span>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; color: rgba(245,246,247,0.6); margin-bottom: 10px;">Structure de la séance</div>
+              <div style="display: flex; flex-direction: column; gap: 1px; border-radius: 14px; overflow: hidden;">
+                <sc-for list="{{ selectedSession.intervals }}" as="itv" hint-placeholder-count="3">
+                  <div style="background: #15171b; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="font-size: 13px; color: rgba(245,246,247,0.85);">{{ itv.label }}</div>
+                    <div style="font-size: 12px; color: rgba(245,246,247,0.4);">{{ itv.detail }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="background: #15171b; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 14px; display: flex; gap: 10px;">
+              <div style="width: 26px; height: 26px; border-radius: 13px; background: rgba(0,230,168,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <div style="width: 7px; height: 7px; border-radius: 4px; background: {{ accentColor }};"></div>
+              </div>
+              <div style="font-size: 13px; line-height: 1.5; color: rgba(245,246,247,0.75);">{{ selectedSession.feedback }}</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 500, &quot;height&quot;: 950}, &quot;accentColor&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#00e6a8&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#00e6a8&quot;, &quot;#ff6b45&quot;, &quot;#3d8bff&quot;, &quot;#e8c34a&quot;]}}">
+
+class Component extends DCLogic {
+  state = {
+    activeTab: 'home',
+    selectedSessionId: null,
+    selectedDay: 2,
+    historyRange: 'semaine',
+    chatInput: '',
+    chatMessages: [
+      { from: 'ai', text: "Bonjour Léa. J'ai ajusté ta semaine après ta sortie vélo d'hier — ton TSS était plus élevé que prévu." },
+      { from: 'user', text: "D'accord, qu'est-ce qui a changé ?" },
+      { from: 'ai', text: "J'ai réduit le fractionné de vendredi et ajouté 10 minutes d'endurance fondamentale à la place. Ta charge reste dans la zone optimale pour l'Ironman 70.3." },
+      { from: 'user', text: "Parfait, merci !" },
+    ],
+  };
+
+  rawSessions = [
+    { id: 's0', dayIndex: 0, dayLabel: 'LUN', dayFull: 'Lundi', dayNum: 13, sport: 'rest', isRest: true },
+    { id: 's1', dayIndex: 1, dayLabel: 'MAR', dayFull: 'Mardi', dayNum: 14, sport: 'swim', sportLabel: 'Natation', sportInitial: 'N', sportColor: '#3d8bff',
+      title: 'Technique & éducatifs', durationLabel: '50 min', distanceLabel: '2400 m', paceLabel: '2:05/100m', intensityLabel: 'Zone 1-2',
+      hrLabel: '128 / 145 bpm', hasPower: false, tss: 48, rpeLabel: '4 / 10',
+      zones: [{ widthLabel: '35%', color: '#3d8bff' }, { widthLabel: '40%', color: '#4dd0e1' }, { widthLabel: '15%', color: '#00e6a8' }, { widthLabel: '7%', color: '#ffb020' }, { widthLabel: '3%', color: '#ff6b45' }],
+      intervals: [{ label: 'Échauffement', detail: '10 min · Z1' }, { label: 'Éducatifs 8×50m', detail: '20 min · Z2' }, { label: 'Retour au calme', detail: '10 min · Z1' }],
+      feedback: "Bonne séance technique. Ta fréquence de nage progresse — on garde ce volume la semaine prochaine." },
+    { id: 's2', dayIndex: 2, dayLabel: 'MER', dayFull: 'Mercredi', dayNum: 15, sport: 'swim', sportLabel: 'Natation', sportInitial: 'N', sportColor: '#3d8bff',
+      title: 'Seuil 3000 m', durationLabel: '55 min', distanceLabel: '3000 m', paceLabel: '1:38/100m', intensityLabel: 'Zone 3-4',
+      hrLabel: '152 / 168 bpm', hasPower: false, tss: 62, rpeLabel: '7 / 10',
+      zones: [{ widthLabel: '10%', color: '#3d8bff' }, { widthLabel: '20%', color: '#4dd0e1' }, { widthLabel: '35%', color: '#00e6a8' }, { widthLabel: '25%', color: '#ffb020' }, { widthLabel: '10%', color: '#ff6b45' }],
+      intervals: [{ label: 'Échauffement', detail: '600 m' }, { label: '8×200m Seuil', detail: '1600 m · R30s' }, { label: 'Retour au calme', detail: '400 m' }],
+      feedback: "Séance clé de la semaine. Ton allure au seuil s'améliore — on pourra viser 1:35/100m d'ici 3 semaines." },
+    { id: 's3', dayIndex: 3, dayLabel: 'JEU', dayFull: 'Jeudi', dayNum: 16, sport: 'bike', sportLabel: 'Vélo', sportInitial: 'V', sportColor: '#ffb020',
+      title: 'Sweetspot 3×12min', durationLabel: '1h45', distanceLabel: '45 km', paceLabel: '26 km/h moy.', intensityLabel: 'Zone 3',
+      hrLabel: '138 / 155 bpm', hasPower: true, powerLabel: '215 W moy.', tss: 78, rpeLabel: '6 / 10',
+      zones: [{ widthLabel: '15%', color: '#3d8bff' }, { widthLabel: '25%', color: '#4dd0e1' }, { widthLabel: '40%', color: '#00e6a8' }, { widthLabel: '15%', color: '#ffb020' }, { widthLabel: '5%', color: '#ff6b45' }],
+      intervals: [{ label: 'Échauffement', detail: '15 min' }, { label: '3×12min Sweetspot', detail: '36 min · Z3' }, { label: 'Récup. entre séries', detail: '3×5 min' }, { label: 'Retour au calme', detail: '15 min' }],
+      feedback: "Puissance stable sur les 3 blocs, bon signe de forme. RAS pour la suite du plan." },
+    { id: 's4', dayIndex: 4, dayLabel: 'VEN', dayFull: 'Vendredi', dayNum: 17, sport: 'run', sportLabel: 'Course', sportInitial: 'C', sportColor: '#00e6a8',
+      title: 'Fractionné 10×400m', durationLabel: '45 min', distanceLabel: '8 km', paceLabel: '4:12/km moy.', intensityLabel: 'Zone 4',
+      hrLabel: '158 / 178 bpm', hasPower: false, tss: 58, rpeLabel: '7 / 10',
+      zones: [{ widthLabel: '10%', color: '#3d8bff' }, { widthLabel: '15%', color: '#4dd0e1' }, { widthLabel: '25%', color: '#00e6a8' }, { widthLabel: '35%', color: '#ffb020' }, { widthLabel: '15%', color: '#ff6b45' }],
+      intervals: [{ label: 'Échauffement', detail: '15 min' }, { label: '10×400m', detail: '24 min · R90s' }, { label: 'Retour au calme', detail: '6 min' }],
+      feedback: "Séance ajustée : volume réduit de 20% suite à ta charge élevée de la semaine. On priorise la récupération." },
+    { id: 's5', dayIndex: 5, dayLabel: 'SAM', dayFull: 'Samedi', dayNum: 18, sport: 'bike', sportLabel: 'Vélo', sportInitial: 'V', sportColor: '#ffb020',
+      title: 'Sortie longue endurance', durationLabel: '3h15', distanceLabel: '110 km', paceLabel: '33.8 km/h moy.', intensityLabel: 'Zone 2',
+      hrLabel: '132 / 148 bpm', hasPower: true, powerLabel: '178 W moy.', tss: 145, rpeLabel: '6 / 10',
+      zones: [{ widthLabel: '20%', color: '#3d8bff' }, { widthLabel: '45%', color: '#4dd0e1' }, { widthLabel: '25%', color: '#00e6a8' }, { widthLabel: '8%', color: '#ffb020' }, { widthLabel: '2%', color: '#ff6b45' }],
+      intervals: [{ label: 'Partie 1', detail: '90 min · Z2' }, { label: 'Partie 2', detail: '90 min · Z2-Z3' }, { label: 'Fin', detail: '15 min · Z1' }],
+      feedback: "Séance la plus longue du bloc. Bonne gestion de l'allure, pense à bien recharger en glucides ce soir." },
+    { id: 's6', dayIndex: 6, dayLabel: 'DIM', dayFull: 'Dimanche', dayNum: 19, sport: 'run', sportLabel: 'Course', sportInitial: 'C', sportColor: '#00e6a8',
+      title: 'Endurance fondamentale', durationLabel: '1h10', distanceLabel: '12 km', paceLabel: '5:35/km moy.', intensityLabel: 'Zone 2',
+      hrLabel: '138 / 150 bpm', hasPower: false, tss: 62, rpeLabel: '4 / 10',
+      zones: [{ widthLabel: '20%', color: '#3d8bff' }, { widthLabel: '50%', color: '#4dd0e1' }, { widthLabel: '22%', color: '#00e6a8' }, { widthLabel: '6%', color: '#ffb020' }, { widthLabel: '2%', color: '#ff6b45' }],
+      intervals: [{ label: 'Footing continu', detail: '70 min · Z2' }],
+      feedback: "Clôture idéale de la semaine. On enchaîne sur une semaine allégée pour bien récupérer." },
+  ];
+
+  weekVolumeData = [
+    { sport: 'swim', label: 'Natation', color: '#3d8bff', hours: 1.75, target: 3 },
+    { sport: 'bike', label: 'Vélo', color: '#ffb020', hours: 5.0, target: 6 },
+    { sport: 'run', label: 'Course', color: '#00e6a8', hours: 1.92, target: 3 },
+  ];
+
+  historyWeeksData = [
+    { label: 'S1', swimPx: 13, bikePx: 43, runPx: 16 },
+    { label: 'S2', swimPx: 16, bikePx: 49, runPx: 19 },
+    { label: 'S3', swimPx: 19, bikePx: 54, runPx: 22 },
+    { label: 'S4', swimPx: 22, bikePx: 59, runPx: 24 },
+    { label: 'S5', swimPx: 11, bikePx: 32, runPx: 13 },
+    { label: 'S6', swimPx: 24, bikePx: 65, runPx: 27 },
+    { label: 'S7', swimPx: 27, bikePx: 70, runPx: 30 },
+    { label: 'S8', swimPx: 19, bikePx: 54, runPx: 21 },
+  ];
+
+  chargeWeeksData = [
+    { label: 'S1', value: 45, px: 50, color: 'rgba(255,255,255,0.25)' },
+    { label: 'S2', value: 52, px: 57, color: 'rgba(255,255,255,0.25)' },
+    { label: 'S3', value: 60, px: 66, color: '#00e6a8' },
+    { label: 'S4', value: 68, px: 75, color: '#00e6a8' },
+    { label: 'S5', value: 50, px: 55, color: 'rgba(255,255,255,0.25)' },
+    { label: 'S6', value: 72, px: 79, color: '#00e6a8' },
+    { label: 'S7', value: 80, px: 88, color: '#ff6b45' },
+    { label: 'S8', value: 74, px: 81, color: '#00e6a8' },
+  ];
+
+  quickRepliesData = ["Pourquoi ce changement ?", "Adapte ma semaine", "Comment récupérer ?"];
+
+  aiReplies = [
+    "Bonne question. Je regarde tes dernières séances et j'ajuste si besoin.",
+    "Ta charge est stable — on peut maintenir le plan actuel.",
+    "Je te conseille 8h de sommeil et une bonne hydratation avant la prochaine séance clé.",
+  ];
+  replyCounter = 0;
+
+  openSession = (id) => this.setState({ selectedSessionId: id });
+  closeSession = () => this.setState({ selectedSessionId: null });
+
+  sendChat = () => {
+    const text = (this.state.chatInput || '').trim();
+    if (!text) return;
+    this.pushMessage(text);
+  };
+
+  pushMessage = (text) => {
+    this.setState(s => ({ chatMessages: [...s.chatMessages, { from: 'user', text }], chatInput: '' }));
+    const reply = this.aiReplies[this.replyCounter % this.aiReplies.length];
+    this.replyCounter += 1;
+    setTimeout(() => {
+      this.setState(s => ({ chatMessages: [...s.chatMessages, { from: 'ai', text: reply }] }));
+    }, 800);
+  };
+
+  handleChatKey = (e) => {
+    if (e.key === 'Enter') this.sendChat();
+  };
+
+  renderVals() {
+    const accentColor = this.props.accentColor ?? '#00e6a8';
+    const activeTab = this.state.activeTab;
+    const selectedDay = this.state.selectedDay;
+
+    const sessions = this.rawSessions.map(s => ({
+      ...s,
+      isNotRest: !s.isRest,
+      cardBorder: s.dayIndex === selectedDay ? accentColor : 'rgba(255,255,255,0.06)',
+      open: s.isRest ? (() => {}) : (() => this.openSession(s.id)),
+    }));
+
+    const todaySession = sessions.find(s => s.id === 's2');
+
+    const planningDays = sessions.map(s => {
+      const isSelected = s.dayIndex === selectedDay;
+      return {
+        dayLabel: s.dayLabel,
+        dayNum: s.dayNum,
+        bg: isSelected ? accentColor : '#15171b',
+        border: isSelected ? accentColor : 'rgba(255,255,255,0.06)',
+        textColor: isSelected ? 'rgba(6,17,13,0.6)' : 'rgba(245,246,247,0.4)',
+        numColor: isSelected ? '#06110d' : '#f5f6f7',
+        dotColor: s.isRest ? 'transparent' : (isSelected ? '#06110d' : s.sportColor),
+        select: () => this.setState({ selectedDay: s.dayIndex }),
+      };
+    });
+
+    const weekVolume = this.weekVolumeData.map(v => {
+      const pct = Math.min(100, Math.round((v.hours / v.target) * 100));
+      const h = Math.floor(v.hours);
+      const m = Math.round((v.hours - h) * 60);
+      return { ...v, pctLabel: pct + '%', hoursLabel: h + 'h' + (m ? String(m).padStart(2, '0') : '') };
+    });
+
+    const historyRangesData = [
+      { key: 'semaine', label: 'Semaine' },
+      { key: 'mois', label: 'Mois' },
+      { key: 'annee', label: 'Année' },
+    ];
+    const historyRanges = historyRangesData.map(r => ({
+      label: r.label,
+      bg: this.state.historyRange === r.key ? accentColor : 'transparent',
+      color: this.state.historyRange === r.key ? '#06110d' : 'rgba(245,246,247,0.5)',
+      select: () => this.setState({ historyRange: r.key }),
+    }));
+
+    const historyWeeks = this.historyWeeksData.map(w => ({
+      label: w.label, swimPx: w.swimPx + 'px', bikePx: w.bikePx + 'px', runPx: w.runPx + 'px',
+    }));
+    const chargeWeeks = this.chargeWeeksData.map(c => ({ label: c.label, px: c.px + 'px', color: c.color }));
+
+    const chatMessages = this.state.chatMessages.map(m => ({
+      justify: m.from === 'user' ? 'flex-end' : 'flex-start',
+      bg: m.from === 'user' ? accentColor : '#15171b',
+      textColor: m.from === 'user' ? '#06110d' : 'rgba(245,246,247,0.9)',
+      text: m.text,
+    }));
+
+    const quickReplies = this.quickRepliesData.map(text => ({ text, send: () => this.pushMessage(text) }));
+
+    const selectedSession = this.state.selectedSessionId
+      ? sessions.find(s => s.id === this.state.selectedSessionId)
+      : null;
+
+    const tabColor = (name) => activeTab === name ? accentColor : 'rgba(245,246,247,0.35)';
+
+    return {
+      accentColor,
+      isHome: activeTab === 'home',
+      isPlanning: activeTab === 'planning',
+      isHistorique: activeTab === 'historique',
+      isChat: activeTab === 'chat',
+      setTabHome: () => this.setState({ activeTab: 'home' }),
+      setTabPlanning: () => this.setState({ activeTab: 'planning' }),
+      setTabHistorique: () => this.setState({ activeTab: 'historique' }),
+      setTabChat: () => this.setState({ activeTab: 'chat' }),
+      goToChat: () => this.setState({ activeTab: 'chat' }),
+      homeIconColor: tabColor('home'),
+      planningIconColor: tabColor('planning'),
+      historiqueIconColor: tabColor('historique'),
+      chatIconColor: tabColor('chat'),
+      todaySession,
+      sessions,
+      planningDays,
+      weekVolume,
+      historyRanges,
+      historyWeeks,
+      chargeWeeks,
+      bandBottom: '49.5px',
+      bandHeight: '22px',
+      chatMessages,
+      quickReplies,
+      chatInput: this.state.chatInput,
+      setChatInput: (e) => this.setState({ chatInput: e.target.value }),
+      sendChat: this.sendChat,
+      handleChatKey: this.handleChatKey,
+      hasSelectedSession: !!selectedSession,
+      selectedSession,
+      closeSession: this.closeSession,
+    };
+  }
+}
+
+</script>
+</body>
+</html>
