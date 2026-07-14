@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Card } from '../components/Card';
@@ -12,12 +12,16 @@ import {
   weekVolumeTotalLabel,
   weekVsLastLabel,
 } from '../data/mockData';
+import { loadJSON, saveJSON } from '../storage/storage';
+import { STORAGE_KEYS } from '../storage/keys';
 
 const RANGES = [
   { key: 'semaine', label: 'Semaine' },
   { key: 'mois', label: 'Mois' },
   { key: 'annee', label: 'Année' },
 ] as const;
+
+type RangeKey = (typeof RANGES)[number]['key'];
 
 const CHART_HEIGHT = 150;
 const LOAD_CHART_HEIGHT = 130;
@@ -26,7 +30,20 @@ const BAND_HEIGHT = 22;
 
 export function HistoriqueScreen() {
   const insets = useSafeAreaInsets();
-  const [range, setRange] = useState<(typeof RANGES)[number]['key']>('semaine');
+  const [range, setRange] = useState<RangeKey>('semaine');
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const saved = await loadJSON<RangeKey>(STORAGE_KEYS.historiqueRange);
+      if (saved != null) setRange(saved);
+      setHydrated(true);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (hydrated) saveJSON(STORAGE_KEYS.historiqueRange, range);
+  }, [range, hydrated]);
 
   return (
     <ScrollView

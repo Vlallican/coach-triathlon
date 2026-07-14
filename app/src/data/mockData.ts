@@ -1,4 +1,5 @@
 import { colors } from '../theme/colors';
+import { buildCurrentWeekDays, daysBetween, formatFullDateLabel, formatWeekRangeLabel, getTodayDayIndex } from '../utils/date';
 import type {
   ChargeWeekEntry,
   ChatMessage,
@@ -7,16 +8,15 @@ import type {
   WeekVolumeEntry,
 } from './types';
 
-export const TODAY_SESSION_ID = 's2';
+type SessionTemplate = Omit<Session, 'dayLabel' | 'dayFull' | 'dayNum'>;
 
-export const sessions: Session[] = [
-  { id: 's0', dayIndex: 0, dayLabel: 'LUN', dayFull: 'Lundi', dayNum: 13, sport: 'rest', isRest: true },
+const weekDays = buildCurrentWeekDays();
+
+const sessionTemplates: SessionTemplate[] = [
+  { id: 's0', dayIndex: 0, sport: 'rest', isRest: true },
   {
     id: 's1',
     dayIndex: 1,
-    dayLabel: 'MAR',
-    dayFull: 'Mardi',
-    dayNum: 14,
     sport: 'swim',
     isRest: false,
     sportLabel: 'Natation',
@@ -48,9 +48,6 @@ export const sessions: Session[] = [
   {
     id: 's2',
     dayIndex: 2,
-    dayLabel: 'MER',
-    dayFull: 'Mercredi',
-    dayNum: 15,
     sport: 'swim',
     isRest: false,
     sportLabel: 'Natation',
@@ -82,9 +79,6 @@ export const sessions: Session[] = [
   {
     id: 's3',
     dayIndex: 3,
-    dayLabel: 'JEU',
-    dayFull: 'Jeudi',
-    dayNum: 16,
     sport: 'bike',
     isRest: false,
     sportLabel: 'Vélo',
@@ -118,9 +112,6 @@ export const sessions: Session[] = [
   {
     id: 's4',
     dayIndex: 4,
-    dayLabel: 'VEN',
-    dayFull: 'Vendredi',
-    dayNum: 17,
     sport: 'run',
     isRest: false,
     sportLabel: 'Course',
@@ -152,9 +143,6 @@ export const sessions: Session[] = [
   {
     id: 's5',
     dayIndex: 5,
-    dayLabel: 'SAM',
-    dayFull: 'Samedi',
-    dayNum: 18,
     sport: 'bike',
     isRest: false,
     sportLabel: 'Vélo',
@@ -187,9 +175,6 @@ export const sessions: Session[] = [
   {
     id: 's6',
     dayIndex: 6,
-    dayLabel: 'DIM',
-    dayFull: 'Dimanche',
-    dayNum: 19,
     sport: 'run',
     isRest: false,
     sportLabel: 'Course',
@@ -215,6 +200,14 @@ export const sessions: Session[] = [
     feedback: 'Clôture idéale de la semaine. On enchaîne sur une semaine allégée pour bien récupérer.',
   },
 ];
+
+export const sessions: Session[] = sessionTemplates.map((t) => {
+  const wd = weekDays[t.dayIndex];
+  return { ...t, dayLabel: wd.dayLabel, dayFull: wd.dayFull, dayNum: wd.dayNum };
+});
+
+export const TODAY_SESSION_ID =
+  sessions.find((s) => s.dayIndex === getTodayDayIndex())?.id ?? sessions[0].id;
 
 export const weekVolumeData: WeekVolumeEntry[] = [
   { sport: 'swim', label: 'Natation', color: colors.swim, hours: 1.75, target: 3 },
@@ -259,12 +252,16 @@ export const aiReplies: string[] = [
   'Je te conseille 8h de sommeil et une bonne hydratation avant la prochaine séance clé.',
 ];
 
-export const weekRangeLabel = 'Semaine du 13 au 19 juillet';
-export const todayLabel = 'Mercredi 15 juillet';
+export const weekRangeLabel = formatWeekRangeLabel();
+export const todayLabel = formatFullDateLabel();
 export const userInitials = 'LM';
 export const userFirstName = 'Léa';
 export const load7DaysTSS = 453;
-export const daysToNextRace = 42;
+
+// Date cible de la prochaine course (Ironman 70.3) — le compte à rebours se recalcule chaque jour.
+const NEXT_RACE_DATE = new Date(2026, 7, 30);
+export const daysToNextRace = daysBetween(new Date(), NEXT_RACE_DATE);
+
 export const weekVolumeTotalLabel = '8h40';
 export const weekSessionsCompletedLabel = '6 / 7';
 export const weekVsLastLabel = '−26%';

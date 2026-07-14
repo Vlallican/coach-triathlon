@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Card } from '../components/Card';
@@ -6,12 +6,28 @@ import { colors } from '../theme/colors';
 import { fonts } from '../theme/typography';
 import { useRootNavigation } from '../navigation/hooks';
 import { sessions, weekRangeLabel } from '../data/mockData';
+import { getTodayDayIndex } from '../utils/date';
+import { loadJSON, saveJSON } from '../storage/storage';
+import { STORAGE_KEYS } from '../storage/keys';
 import type { Session } from '../data/types';
 
 export function PlanningScreen() {
   const insets = useSafeAreaInsets();
   const rootNav = useRootNavigation();
-  const [selectedDay, setSelectedDay] = useState(2);
+  const [selectedDay, setSelectedDay] = useState(getTodayDayIndex());
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const saved = await loadJSON<number>(STORAGE_KEYS.planningSelectedDay);
+      if (saved != null) setSelectedDay(saved);
+      setHydrated(true);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (hydrated) saveJSON(STORAGE_KEYS.planningSelectedDay, selectedDay);
+  }, [selectedDay, hydrated]);
 
   return (
     <ScrollView

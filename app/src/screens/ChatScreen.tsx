@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -14,6 +14,8 @@ import { SendIcon } from '../components/TabIcons';
 import { colors } from '../theme/colors';
 import { fonts } from '../theme/typography';
 import { aiReplies, initialChatMessages, quickReplies } from '../data/mockData';
+import { loadJSON, saveJSON } from '../storage/storage';
+import { STORAGE_KEYS } from '../storage/keys';
 import type { ChatMessage } from '../data/types';
 
 let messageSeq = 1;
@@ -26,8 +28,21 @@ export function ChatScreen() {
   const insets = useSafeAreaInsets();
   const [messages, setMessages] = useState<ChatMessage[]>(initialChatMessages);
   const [input, setInput] = useState('');
+  const [hydrated, setHydrated] = useState(false);
   const replyCounter = useRef(0);
   const listRef = useRef<FlatList<ChatMessage>>(null);
+
+  useEffect(() => {
+    (async () => {
+      const saved = await loadJSON<ChatMessage[]>(STORAGE_KEYS.chatMessages);
+      if (saved != null && saved.length > 0) setMessages(saved);
+      setHydrated(true);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (hydrated) saveJSON(STORAGE_KEYS.chatMessages, messages);
+  }, [messages, hydrated]);
 
   const pushMessage = useCallback((text: string) => {
     const trimmed = text.trim();
