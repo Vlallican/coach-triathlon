@@ -6,16 +6,16 @@ import { Card } from '../components/Card';
 import { CloseIcon } from '../components/TabIcons';
 import { colors } from '../theme/colors';
 import { fonts } from '../theme/typography';
-import { sessions } from '../data/mockData';
+import { useSessionById } from '../hooks/useSessions';
 import type { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SessionDetail'>;
 
 export function SessionDetailScreen({ route, navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const session = sessions.find((s) => s.id === route.params.sessionId);
+  const { session, loading } = useSessionById(route.params.sessionId);
 
-  if (!session) return null;
+  if (loading || !session) return null;
 
   const stats: { label: string; value: string }[] = [
     { label: 'Distance', value: session.distanceLabel! },

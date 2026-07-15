@@ -10,16 +10,10 @@ import { colors } from '../theme/colors';
 import { fonts } from '../theme/typography';
 import { useRootNavigation } from '../navigation/hooks';
 import type { TabParamList } from '../navigation/types';
-import {
-  TODAY_SESSION_ID,
-  daysToNextRace,
-  load7DaysTSS,
-  sessions,
-  todayLabel,
-  userFirstName,
-  userInitials,
-  weekVolumeData,
-} from '../data/mockData';
+import { daysToNextRace, todayLabel, weekVolumeData } from '../data/mockData';
+import { useAuth } from '../lib/AuthContext';
+import { useSessions } from '../hooks/useSessions';
+import { useProfile } from '../hooks/useProfile';
 
 function formatHours(hours: number) {
   const h = Math.floor(hours);
@@ -32,7 +26,16 @@ export function HomeScreen() {
   const rootNav = useRootNavigation();
   const tabNav = useNavigation<BottomTabNavigationProp<TabParamList>>();
 
-  const todaySession = sessions.find((s) => s.id === TODAY_SESSION_ID)!;
+  const { user } = useAuth();
+  const { sessions, todaySessionId, loading: sessionsLoading } = useSessions(user?.id);
+  const { profile, loading: profileLoading } = useProfile(user?.id);
+
+  const todaySession = sessions.find((s) => s.id === todaySessionId);
+  const load7DaysTSS = sessions.filter((s) => !s.isRest).reduce((sum, s) => sum + (s.tss ?? 0), 0);
+
+  if (sessionsLoading || profileLoading || !todaySession) {
+    return <View style={[styles.screen, { paddingTop: insets.top + 24 }]} />;
+  }
 
   return (
     <ScrollView
@@ -41,11 +44,11 @@ export function HomeScreen() {
     >
       <View style={styles.headerRow}>
         <View>
-          <Text style={styles.greeting}>Bonjour, {userFirstName}</Text>
+          <Text style={styles.greeting}>Bonjour, {profile?.firstName}</Text>
           <Text style={styles.date}>{todayLabel}</Text>
         </View>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{userInitials}</Text>
+          <Text style={styles.avatarText}>{profile?.initials}</Text>
         </View>
       </View>
 

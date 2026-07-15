@@ -1,5 +1,5 @@
 import { colors } from '../theme/colors';
-import { buildCurrentWeekDays, daysBetween, formatFullDateLabel, formatWeekRangeLabel, getTodayDayIndex } from '../utils/date';
+import { buildCurrentWeekDays, daysBetween, formatFullDateLabel } from '../utils/date';
 import type {
   ChargeWeekEntry,
   ChatMessage,
@@ -206,9 +206,6 @@ export const sessions: Session[] = sessionTemplates.map((t) => {
   return { ...t, dayLabel: wd.dayLabel, dayFull: wd.dayFull, dayNum: wd.dayNum };
 });
 
-export const TODAY_SESSION_ID =
-  sessions.find((s) => s.dayIndex === getTodayDayIndex())?.id ?? sessions[0].id;
-
 export const weekVolumeData: WeekVolumeEntry[] = [
   { sport: 'swim', label: 'Natation', color: colors.swim, hours: 1.75, target: 3 },
   { sport: 'bike', label: 'Vélo', color: colors.bike, hours: 5.0, target: 6 },
@@ -252,11 +249,7 @@ export const aiReplies: string[] = [
   'Je te conseille 8h de sommeil et une bonne hydratation avant la prochaine séance clé.',
 ];
 
-export const weekRangeLabel = formatWeekRangeLabel();
 export const todayLabel = formatFullDateLabel();
-export const userInitials = 'LM';
-export const userFirstName = 'Léa';
-export const load7DaysTSS = 453;
 
 // Date cible de la prochaine course (Ironman 70.3) — le compte à rebours se recalcule chaque jour.
 const NEXT_RACE_DATE = new Date(2026, 7, 30);

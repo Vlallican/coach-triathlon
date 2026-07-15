@@ -13,35 +13,26 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SendIcon } from '../components/TabIcons';
 import { colors } from '../theme/colors';
 import { fonts } from '../theme/typography';
-import { aiReplies, initialChatMessages, quickReplies } from '../data/mockData';
-import { usePersistedState } from '../hooks/usePersistedState';
-import { STORAGE_KEYS } from '../storage/keys';
+import { quickReplies } from '../data/mockData';
+import { useAuth } from '../lib/AuthContext';
+import { useChatMessages } from '../hooks/useChatMessages';
 import type { ChatMessage } from '../data/types';
-
-let messageSeq = 1;
-function nextId() {
-  messageSeq += 1;
-  return `m-${Date.now()}-${messageSeq}`;
-}
 
 export function ChatScreen() {
   const insets = useSafeAreaInsets();
-  const [messages, setMessages] = usePersistedState<ChatMessage[]>(STORAGE_KEYS.chatMessages, initialChatMessages);
+  const { user } = useAuth();
+  const { messages, sendMessage } = useChatMessages(user?.id);
   const [input, setInput] = useState('');
-  const replyCounter = useRef(0);
   const listRef = useRef<FlatList<ChatMessage>>(null);
 
-  const pushMessage = useCallback((text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed) return;
-    setMessages((prev) => [...prev, { id: nextId(), from: 'user', text: trimmed }]);
-    setInput('');
-    const reply = aiReplies[replyCounter.current % aiReplies.length];
-    replyCounter.current += 1;
-    setTimeout(() => {
-      setMessages((prev) => [...prev, { id: nextId(), from: 'ai', text: reply }]);
-    }, 800);
-  }, []);
+  const pushMessage = useCallback(
+    (text: string) => {
+      if (!text.trim()) return;
+      sendMessage(text);
+      setInput('');
+    },
+    [sendMessage]
+  );
 
   const sendChat = useCallback(() => pushMessage(input), [input, pushMessage]);
 

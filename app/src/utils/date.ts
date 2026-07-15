@@ -78,3 +78,17 @@ export function daysBetween(from: Date, to: Date): number {
   const b = startOfDay(to).getTime();
   return Math.round((b - a) / 86400000);
 }
+
+/** Parse une date 'YYYY-MM-DD' en Date locale (évite le décalage de fuseau de `new Date(iso)`). */
+export function parseISODate(iso: string): Date {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+/** Formate une Date locale en 'YYYY-MM-DD' sans passer par UTC (évite le décalage de `toISOString`). */
+export function toISODateString(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}

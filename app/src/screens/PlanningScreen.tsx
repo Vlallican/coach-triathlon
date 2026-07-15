@@ -5,16 +5,24 @@ import { Card } from '../components/Card';
 import { colors } from '../theme/colors';
 import { fonts } from '../theme/typography';
 import { useRootNavigation } from '../navigation/hooks';
-import { sessions, weekRangeLabel } from '../data/mockData';
-import { getTodayDayIndex } from '../utils/date';
+import { getTodayDayIndex, formatWeekRangeLabel } from '../utils/date';
 import { usePersistedState } from '../hooks/usePersistedState';
 import { STORAGE_KEYS } from '../storage/keys';
+import { useAuth } from '../lib/AuthContext';
+import { useSessions } from '../hooks/useSessions';
 import type { Session } from '../data/types';
 
 export function PlanningScreen() {
   const insets = useSafeAreaInsets();
   const rootNav = useRootNavigation();
   const [selectedDay, setSelectedDay] = usePersistedState(STORAGE_KEYS.planningSelectedDay, getTodayDayIndex());
+
+  const { user } = useAuth();
+  const { sessions, weekStartDate, loading } = useSessions(user?.id);
+
+  if (loading) {
+    return <View style={[styles.screen, { paddingTop: insets.top + 24 }]} />;
+  }
 
   return (
     <ScrollView
@@ -23,7 +31,7 @@ export function PlanningScreen() {
     >
       <View>
         <Text style={styles.title}>Planning</Text>
-        <Text style={styles.subtitle}>{weekRangeLabel}</Text>
+        <Text style={styles.subtitle}>{weekStartDate ? formatWeekRangeLabel(weekStartDate) : ''}</Text>
       </View>
 
       <View style={styles.daysRow}>
